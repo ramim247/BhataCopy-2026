@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আবেদনপত্র ডাউনলোড পোর্টাল</title>
+    <!-- SolaimanLipi Font & FontAwesome Icons -->
+    <link href="https://fonts.maateen.me/solaiman-lipi/font.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SolaimanLipi', Arial, sans-serif;
+        }
+
+        body {
+            background: #181c24;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #d1d5db;
+        }
+
+        /* Full Neumorphic Main Container */
+        .neu-card {
+            background: #181c24;
+            border-radius: 30px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 12px 12px 24px #101318, -12px -12px 24px #202530;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Header Date & Time Section (Centered & Large) */
+        .clock-section {
+            background: #181c24;
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            box-shadow: inset 5px 5px 10px #101318, inset -5px -5px 10px #202530;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-time {
+            font-size: 20px;
+            font-weight: 700;
+            color: #60a5fa;
+            letter-spacing: 0.5px;
+        }
+
+        /* Neumorphic Input Boxes */
+        .input-group { 
+            margin-bottom: 22px; 
+            text-align: left; 
+        }
+
+        .input-group label { 
+            display: block; 
+            font-size: 14px; 
+            color: #9ca3af; 
+            margin-bottom: 8px; 
+            margin-left: 6px; 
+        }
+        
+        .neu-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: #181c24;
+            border: none;
+            border-radius: 18px;
+            font-size: 15px;
+            color: #ffffff;
+            outline: none;
+            box-shadow: inset 6px 6px 12px #101318, inset -6px -6px 12px #202530;
+            transition: all 0.3s ease;
+        }
+
+        .neu-input::placeholder { color: #4b5563; }
+
+        .neu-input:focus {
+            box-shadow: inset 3px 3px 6px #101318, inset -3px -3px 6px #202530, 0 0 8px rgba(96, 165, 250, 0.4);
+        }
+
+        /* Neumorphic Buttons */
+        .neu-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: #181c24;
+            border: none;
+            border-radius: 18px;
+            color: #60a5fa;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 6px 6px 14px #101318, -6px -6px 14px #202530;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .neu-btn:hover {
+            color: #93c5fd;
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 18px #101318, -8px -8px 18px #202530;
+        }
+
+        .neu-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px #101318, inset -4px -4px 8px #202530;
+        }
+
+        /* Header Bar (After Login) */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: #181c24;
+            box-shadow: inset 4px 4px 8px #101318, inset -4px -4px 8px #202530;
+        }
+
+        .user-tag { font-size: 15px; color: #60a5fa; font-weight: 600; }
+
+        .stats-badge {
+            background: #181c24;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #34d399;
+            font-weight: bold;
+            box-shadow: 3px 3px 6px #101318, -3px -3px 6px #202530;
+        }
+
+        .btn-logout {
+            width: auto;
+            padding: 6px 14px;
+            margin-top: 0;
+            font-size: 13px;
+            color: #f87171;
+            border-radius: 12px;
+        }
+
+        h2 { font-size: 24px; margin-bottom: 6px; font-weight: 700; color: #ffffff; }
+        p.subtitle { font-size: 14px; color: #6b7280; margin-bottom: 22px; }
+
+        .step-container {
+            transition: all 0.3s ease;
+        }
+
+        .step-container.hidden-step {
+            display: none;
+        }
+
+        /* Custom Status and Spinner */
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #34d399;
+            background: #181c24;
+            padding: 12px;
+            border-radius: 14px;
+            display: none;
+            box-shadow: inset 3px 3px 6px #101318, inset -3px -3px 6px #202530;
+        }
+
+        .error-status { color: #f87171; }
+
+        .loader {
+            border: 3px solid #101318;
+            border-top: 3px solid #60a5fa;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 0.8s linear infinite;
+            margin: 18px auto 0 auto;
+            display: none;
+        }
+
+        /* Neumorphic Owner & Social Links */
+        .owner-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            padding: 4px;
+            background: #181c24;
+            box-shadow: 6px 6px 12px #101318, -6px -6px 12px #202530;
+            margin-bottom: 12px;
+        }
+
+        .owner-name { font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 12px; }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            text-decoration: none;
+            background: #181c24;
+            box-shadow: 5px 5px 10px #101318, -5px -5px 10px #202530;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn:active {
+            box-shadow: inset 3px 3px 6px #101318, inset -3px -3px 6px #202530;
+        }
+
+        .social-btn.wa { color: #25D366; }
+        .social-btn.fb { color: #1877F2; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="neu-card">
+    
+    <!-- Top Central Clock Section -->
+    <div class="clock-section">
+        <div class="clock-time" id="liveClock">লোড হচ্ছে...</div>
+    </div>
+
+    <!-- Step 1: Login Form -->
+    <div id="loginStep" class="step-container">
+        <h2>লগইন করুন</h2>
+        <p class="subtitle">পোর্টাল ব্যবহার করতে অ্যাকাউন্ট দিন</p>
+
+        <div class="input-group">
+            <label for="username">ইউজারনেম</label>
+            <input type="text" id="username" class="neu-input" placeholder="ইউজারনেম লিখুন" autocomplete="off" />
+        </div>
+
+        <div class="input-group">
+            <label for="password">পাসওয়ার্ড</label>
+            <input type="password" id="password" class="neu-input" placeholder="পাসওয়ার্ড লিখুন" />
+        </div>
+
+        <button id="loginBtn" class="neu-btn" onclick="checkLogin()">
+            <span>লগইন করুন</span>
+        </button>
+    </div>
+
+    <!-- Step 2: Download Portal (Visible After Login) -->
+    <div id="downloadStep" class="step-container hidden-step">
+        <div class="header-bar">
+            <div>
+                <span id="userGreeting" class="user-tag"></span>
+            </div>
+            <!-- Daily Counter visible only after login -->
+            <div class="stats-badge">
+                <i class="fa-solid fa-download"></i> আজ: <span id="dailyCount">0</span>টি
+            </div>
+            <button class="neu-btn btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+
+        <h2>আবেদনপত্র ডাউনলোড</h2>
+        <p class="subtitle">আপনার ট্র্যাকিং আইডি নিচে ইনপুট দিন</p>
+
+        <div class="input-group">
+            <label for="trackingId">ট্র্যাকিং আইডি</label>
+            <input type="text" id="trackingId" class="neu-input" placeholder="যেমন: 7260015310" autocomplete="off" />
+        </div>
+
+        <button class="neu-btn" onclick="startDownload()">
+            <i class="fa-solid fa-file-arrow-down"></i> ডাউনলোড করুন
+        </button>
+    </div>
+
+    <div id="loaderSpinner" class="loader"></div>
+    <div id="statusText" class="status"></div>
+
+    <!-- Owner & Social Connections -->
+    <div class="owner-section">
+        <img src="https://avatars.githubusercontent.com/u/278067025?v=4" alt="Ramim Talukder" class="profile-img">
+        <div class="owner-name">Ramim Talukder</div>
+        <div class="social-links">
+            <a href="https://wa.me/8801613275460" target="_blank" class="social-btn wa">
+                <i class="fa-brands fa-whatsapp"></i> হোয়াটসঅ্যাপ
+            </a>
+            <a href="https://www.facebook.com/RamimTalukderFB" target="_blank" class="social-btn fb">
+                <i class="fa-brands fa-facebook"></i> ফেইসবুক
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ADMIN_USER = "ramimtalukder";
+    const ADMIN_PASS = "rt";
+
+    // Top Clock Format
+    function updateLiveClock() {
+        const now = new Date();
+        const options = { 
+            weekday: 'short', 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: true 
+        };
+        document.getElementById('liveClock').innerText = now.toLocaleString('bn-BD', options);
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // Daily Analytics
+    function getTodayKey() {
+        const today = new Date();
+        return `dl_count_${today.getFullYear()}_${today.getMonth()+1}_${today.getDate()}`;
+    }
+
+    function loadDailyStats() {
+        const key = getTodayKey();
+        const count = localStorage.getItem(key) || 0;
+        document.getElementById('dailyCount').innerText = count;
+    }
+
+    function incrementDailyStats() {
+        const key = getTodayKey();
+        let count = parseInt(localStorage.getItem(key) || 0);
+        count++;
+        localStorage.setItem(key, count);
+        document.getElementById('dailyCount').innerText = count;
+    }
+
+    window.onload = function() {
+        loadDailyStats();
+        const savedUser = sessionStorage.getItem('activeUser');
+        if (savedUser === ADMIN_USER) {
+            showDownloadScreen(savedUser);
+        }
+    };
+
+    // 3-Second Loading Animation for Login
+    function checkLogin() {
+        const uInput = document.getElementById('username').value.trim();
+        const pInput = document.getElementById('password').value.trim();
+
+        if (uInput === ADMIN_USER && pInput === ADMIN_PASS) {
+            hideStatus();
+            
+            // Show Loader and Animation for 3 Seconds
+            document.getElementById('loaderSpinner').style.display = 'block';
+            showStatus('অ্যাসেস যাচাই করা হচ্ছে...', false);
+            
+            setTimeout(() => {
+                document.getElementById('loaderSpinner').style.display = 'none';
+                hideStatus();
+                sessionStorage.setItem('activeUser', uInput);
+                showDownloadScreen(uInput);
+            }, 3000);
+
+        } else {
+            showStatus('ভুল ইউজারনেম অথবা পাসওয়ার্ড!', true);
+        }
+    }
+
+    function showDownloadScreen(username) {
+        document.getElementById('loginStep').classList.add('hidden-step');
+        document.getElementById('downloadStep').classList.remove('hidden-step');
+        document.getElementById('userGreeting').innerText = "স্বাগতম, " + username;
+    }
+
+    function logout() {
+        sessionStorage.removeItem('activeUser');
+        document.getElementById('downloadStep').classList.add('hidden-step');
+        document.getElementById('loginStep').classList.remove('hidden-step');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        hideStatus();
+    }
+
+    async function startDownload() {
+        const idInput = document.getElementById('trackingId').value.trim();
+
+        if (!idInput) {
+            showStatus('অনুগ্রহ করে ট্র্যাকিং আইডি লিখুন!', true);
+            return;
+        }
+
+        showStatus('আবেদনপত্র ফেচ করা হচ্ছে...', false);
+        document.getElementById('loaderSpinner').style.display = 'block';
+
+        const b64Api = "aHR0cHM6Ly9hcGkuYmhhdGEuZ292LmJkL2FwaS92MS9nbG9iYWwvYXBwbGljYW50c19jb3B5P2FwcGxpY2F0aW9uX2lkPQ==";
+        const apiUrl = atob(b64Api) + idInput + "&lang=bn&language=bn";
+
+        try {
+            const response = await fetch(apiUrl);
+            document.getElementById('loaderSpinner').style.display = 'none';
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = downloadUrl;
+                
+                const now = new Date();
+                const timeStamp = now.toISOString().slice(0,10);
+                a.download = `Application_${idInput}_${timeStamp}.pdf`;
+
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(downloadUrl);
+                
+                incrementDailyStats();
+                showStatus('ডাউনলোড সম্পূর্ণ হয়েছে!', false);
+            } else {
+                showStatus('কোনো আবেদনপত্র পাওয়া যায়নি! সঠিক আইডি দিন।', true);
+            }
+        } catch (error) {
+            document.getElementById('loaderSpinner').style.display = 'none';
+            window.open(apiUrl, '_blank');
+            incrementDailyStats();
+            showStatus('আবেদনপত্র ওপেন করা হয়েছে।', false);
+        }
+    }
+
+    function showStatus(msg, isError) {
+        const statusText = document.getElementById('statusText');
+        statusText.style.display = 'block';
+        statusText.innerText = msg;
+        if (isError) {
+            statusText.classList.add('error-status');
+        } else {
+            statusText.classList.remove('error-status');
+        }
+    }
+
+    function hideStatus() {
+        document.getElementById('statusText').style.display = 'none';
+    }
+
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            if (!document.getElementById('loginStep').classList.contains('hidden-step')) {
+                checkLogin();
+            } else {
+                startDownload();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
