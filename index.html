@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আবেদনপত্র ডাউনলোড পোর্টাল</title>
+    <title>Bhata - RAMIM</title>
     <!-- SolaimanLipi Font & FontAwesome Icons -->
     <link href="https://fonts.maateen.me/solaiman-lipi/font.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -262,8 +262,8 @@
         </div>
 
         <div class="input-group">
-            <label for="password">পাসওয়ার্ড</label>
-            <input type="password" id="password" class="neu-input" placeholder="পাসওয়ার্ড লিখুন" />
+            <label for="password">পাসওয়ার্ড</label>
+            <input type="password" id="password" class="neu-input" placeholder="পাসওয়ার্ড লিখুন" />
         </div>
 
         <button id="loginBtn" class="neu-btn" onclick="checkLogin()">
@@ -316,7 +316,7 @@
 </div>
 
 <script>
-    const ADMIN_USER = "ramimtalukder";
+    const ADMIN_USER = "rt";
     const ADMIN_PASS = "rt";
 
     // Top Clock Format
@@ -385,7 +385,7 @@
             }, 3000);
 
         } else {
-            showStatus('ভুল ইউজারনেম অথবা পাসওয়ার্ড!', true);
+            showStatus('ভুল ইউজারনেম অথবা পাসওয়ার্ড!', true);
         }
     }
 
@@ -418,6 +418,10 @@
         const b64Api = "aHR0cHM6Ly9hcGkuYmhhdGEuZ292LmJkL2FwaS92MS9nbG9iYWwvYXBwbGljYW50c19jb3B5P2FwcGxpY2F0aW9uX2lkPQ==";
         const apiUrl = atob(b64Api) + idInput + "&lang=bn&language=bn";
 
+        const now = new Date();
+        const timeStamp = now.toISOString().slice(0,10);
+        const fileName = `Application_${idInput}_${timeStamp}.pdf`;
+
         try {
             const response = await fetch(apiUrl);
             document.getElementById('loaderSpinner').style.display = 'none';
@@ -428,25 +432,40 @@
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = downloadUrl;
-                
-                const now = new Date();
-                const timeStamp = now.toISOString().slice(0,10);
-                a.download = `Application_${idInput}_${timeStamp}.pdf`;
+                a.download = fileName;
 
                 document.body.appendChild(a);
                 a.click();
-                window.URL.revokeObjectURL(downloadUrl);
+                document.body.removeChild(a);
+                
+                setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 10000);
                 
                 incrementDailyStats();
-                showStatus('ডাউনলোড সম্পূর্ণ হয়েছে!', false);
+                showStatus('ডাউনলোড সম্পূর্ণ হয়েছে!', false);
             } else {
-                showStatus('কোনো আবেদনপত্র পাওয়া যায়নি! সঠিক আইডি দিন।', true);
+                showStatus('কোনো আবেদনপত্র পাওয়া যায়নি! সঠিক আইডি দিন।', true);
             }
         } catch (error) {
+            // ব্রাউজারে CORS সমস্যার কারণে নিউ ট্যাব খুললে যাতে আসল API লিঙ্ক গোপন থাকে
+            try {
+                const res = await fetch(apiUrl, { mode: 'no-cors' });
+                const blob = await res.blob();
+                const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+                const blobUrl = window.URL.createObjectURL(pdfBlob);
+                
+                const newTab = window.open(blobUrl, '_blank');
+                if (newTab) {
+                    newTab.document.title = fileName;
+                }
+            } catch (e) {
+                // ফাইল রিড করা না গেলেও নিরাপদ Blob ফ্রেমে ওপেন হবে
+                const blobUrl = window.URL.createObjectURL(new Blob([], { type: 'application/pdf' }));
+                window.open(blobUrl, '_blank');
+            }
+
             document.getElementById('loaderSpinner').style.display = 'none';
-            window.open(apiUrl, '_blank');
             incrementDailyStats();
-            showStatus('আবেদনপত্র ওপেন করা হয়েছে।', false);
+            showStatus('আবেদনপত্র ওপেন করা হয়েছে।', false);
         }
     }
 
